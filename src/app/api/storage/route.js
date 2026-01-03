@@ -1,16 +1,5 @@
-import { writeFile, readFile, mkdir } from 'fs/promises'
-import { join } from 'path'
 import { NextResponse } from 'next/server'
-import { existsSync } from 'fs'
-
-const DATA_DIR = join(process.cwd(), 'data')
-
-// Ensure data directory exists
-async function ensureDataDir() {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true })
-  }
-}
+import clientPromise from '@/lib/mongodb'
 
 // GET - Read data
 export async function GET(request) {
@@ -22,18 +11,14 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Key is required' }, { status: 400 })
     }
 
-    await ensureDataDir()
-    const filePath = join(DATA_DIR, `${key}.json`)
+    const client = await clientPromise
+    const db = client.db('nextgen-ev')
+    const collection = db.collection('storage')
     
-    if (!existsSync(filePath)) {
-      console.log(`File not found: ${filePath}, returning empty array`)
-      return NextResponse.json([])
-    }
-
-    const data = await readFile(filePath, 'utf-8')
-    const parsed = JSON.parse(data)
-    console.log(`Loaded ${key}:`, parsed.length, 'items')
-    return NextResponse.json(parsed)
+    const doc = await collection.findOne({ key })
+    console.log(`✅ Loaded ${key}:`, doc?.data?.length || 0, 'items')
+    
+    return NextResponse.json(doc?.data || [])
   } catch (error) {
     console.error('Error reading data:', error)
     return NextResponse.json([])
@@ -56,12 +41,17 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Data is required' }, { status: 400 })
     }
 
-    await ensureDataDir()
-    const filePath = join(DATA_DIR, `${key}.json`)
+    const client = await clientPromise
+    const db = client.db('nextgen-ev')
+    const collection = db.collection('storage')
     
-    console.log('Saving to:', filePath)
-    await writeFile(filePath, JSON.stringify(data, null, 2))
-    console.log('✅ Saved successfully!')
+    await collection.updateOne(
+      { key },
+      { $set: { key, data, updatedAt: new Date() } },
+      { upsert: true }
+    )
+    
+    console.log('✅ Saved successfully to MongoDB!')
     
     return NextResponse.json({ success: true, itemCount: data.length })
   } catch (error) {
