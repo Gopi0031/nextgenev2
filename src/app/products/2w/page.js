@@ -20,7 +20,11 @@ const ProductCarousel = ({ images }) => {
   if (!images || images.length === 0) {
     return (
       <div className="flex items-center justify-center h-96 bg-gradient-to-br from-[#007BFF]/20 to-[#A8E600]/20 rounded-3xl">
-        <p className="text-xl text-[#212529] font-bold">No Images Available</p>
+        <div className="text-center p-8">
+          <div className="text-6xl mb-4">📷</div>
+          <p className="text-xl text-[#212529] font-bold mb-2">No Images Available</p>
+          <p className="text-sm text-[#212529]/60">Please upload product images from admin dashboard</p>
+        </div>
       </div>
     )
   }
@@ -77,29 +81,63 @@ const ProductCarousel = ({ images }) => {
 export default function TwoWheelerProducts() {
   const [products, setProducts] = useState([])
 
-  useEffect(() => {
-    loadProducts()
-    
-    const handleUpdate = () => loadProducts()
-    window.addEventListener('storage', handleUpdate)
-    window.addEventListener('adminMediaUpdated', handleUpdate)
-    
-    return () => {
-      window.removeEventListener('storage', handleUpdate)
-      window.removeEventListener('adminMediaUpdated', handleUpdate)
-    }
-  }, [])
-
+  // Load products with auto-refresh
   const loadProducts = () => {
     try {
       const saved = localStorage.getItem('twoWheelerProducts')
       if (saved) {
-        setProducts(JSON.parse(saved))
+        const parsed = JSON.parse(saved)
+        console.log('2W Products loaded:', parsed.length)
+        setProducts(parsed)
+      } else {
+        setProducts([])
       }
     } catch (e) {
-      console.error('Error loading products:', e)
+      console.error('Error loading 2W products:', e)
+      setProducts([])
     }
   }
+
+  useEffect(() => {
+    loadProducts()
+    
+    const handleUpdate = () => {
+      console.log('Storage event detected - reloading 2W products')
+      loadProducts()
+    }
+
+    window.addEventListener('storage', handleUpdate)
+    window.addEventListener('adminMediaUpdated', handleUpdate)
+
+    // Polling as backup (checks every 3 seconds)
+    const pollInterval = setInterval(() => {
+      const saved = localStorage.getItem('twoWheelerProducts')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.length !== products.length) {
+          console.log('Poll detected change in 2W products')
+          loadProducts()
+        }
+      }
+    }, 3000)
+    
+    return () => {
+      window.removeEventListener('storage', handleUpdate)
+      window.removeEventListener('adminMediaUpdated', handleUpdate)
+      clearInterval(pollInterval)
+    }
+  }, [products.length])
+
+  // Reload on tab focus
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log('Tab focused - reloading 2W products')
+      loadProducts()
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [])
 
   return (
     <main className="min-h-screen bg-[#FFFFF0] pt-24 pb-12">

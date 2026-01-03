@@ -3,21 +3,28 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-// Image Carousel Component
-const ImageCarousel = ({ images, autoPlayInterval = 3000 }) => {
+// Image Carousel Component with Auto-Reload
+const ImageCarousel = ({ images, autoPlayInterval = 3000, storageKey }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [loadedImages, setLoadedImages] = useState(images)
 
+  // Reload images when they change
   useEffect(() => {
-    if (!images || images.length === 0) return
+    setLoadedImages(images)
+  }, [images])
+
+  // Auto-play carousel
+  useEffect(() => {
+    if (!loadedImages || loadedImages.length === 0) return
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length)
+      setCurrentIndex((prev) => (prev + 1) % loadedImages.length)
     }, autoPlayInterval)
 
     return () => clearInterval(interval)
-  }, [images, autoPlayInterval])
+  }, [loadedImages, autoPlayInterval])
 
-  if (!images || images.length === 0) {
+  if (!loadedImages || loadedImages.length === 0) {
     return (
       <div className="flex items-center justify-center h-96 bg-gradient-to-br from-[#007BFF]/20 to-[#A8E600]/20 rounded-3xl border-2 border-dashed border-[#007BFF]/30">
         <div className="text-center p-8">
@@ -31,7 +38,7 @@ const ImageCarousel = ({ images, autoPlayInterval = 3000 }) => {
 
   return (
     <div className="relative h-96 rounded-3xl overflow-hidden shadow-2xl">
-      {images.map((img, index) => (
+      {loadedImages.map((img, index) => (
         <div
           key={`carousel-img-${index}`}
           className="absolute inset-0 transition-opacity duration-500"
@@ -47,7 +54,7 @@ const ImageCarousel = ({ images, autoPlayInterval = 3000 }) => {
       ))}
 
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
-        {images.map((_, index) => (
+        {loadedImages.map((_, index) => (
           <button
             key={`carousel-dot-${index}`}
             onClick={() => setCurrentIndex(index)}
@@ -59,17 +66,17 @@ const ImageCarousel = ({ images, autoPlayInterval = 3000 }) => {
         ))}
       </div>
 
-      {images.length > 1 && (
+      {loadedImages.length > 1 && (
         <>
           <button
-            onClick={() => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)}
+            onClick={() => setCurrentIndex((prev) => (prev - 1 + loadedImages.length) % loadedImages.length)}
             className="absolute left-4 top-1/2 -translate-y-1/2 bg-[#007BFF]/80 hover:bg-[#007BFF] text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl font-bold transition z-10"
             aria-label="Previous image"
           >
             ‹
           </button>
           <button
-            onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
+            onClick={() => setCurrentIndex((prev) => (prev + 1) % loadedImages.length)}
             className="absolute right-4 top-1/2 -translate-y-1/2 bg-[#007BFF]/80 hover:bg-[#007BFF] text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl font-bold transition z-10"
             aria-label="Next image"
           >
@@ -148,17 +155,52 @@ export default function Home() {
     },
   ])
 
-  // Load hero images from admin dashboard ONLY
+  // Load hero images with auto-refresh
   useEffect(() => {
+    const loadHeroImages = () => {
+      const saved = localStorage.getItem('heroImages')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          console.log('Hero images loaded:', parsed.length)
+          setHeroImages(parsed)
+        } catch (e) {
+          console.error('Error loading hero images:', e)
+          setHeroImages([])
+        }
+      } else {
+        setHeroImages([])
+      }
+    }
+
     loadHeroImages()
-    const handleUpdate = () => loadHeroImages()
+
+    const handleUpdate = () => {
+      console.log('Storage event detected - reloading hero images')
+      loadHeroImages()
+    }
+
     window.addEventListener('storage', handleUpdate)
     window.addEventListener('adminMediaUpdated', handleUpdate)
+
+    // Polling as backup (checks every 3 seconds)
+    const pollInterval = setInterval(() => {
+      const saved = localStorage.getItem('heroImages')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.length !== heroImages.length) {
+          console.log('Poll detected change in hero images')
+          loadHeroImages()
+        }
+      }
+    }, 3000)
+
     return () => {
       window.removeEventListener('storage', handleUpdate)
       window.removeEventListener('adminMediaUpdated', handleUpdate)
+      clearInterval(pollInterval)
     }
-  }, [])
+  }, [heroImages.length])
 
   // Hero image auto-slide
   useEffect(() => {
@@ -170,7 +212,7 @@ export default function Home() {
     }
   }, [heroImages.length])
 
-  // Load all product images from admin dashboard ONLY
+  // Load all product images with auto-refresh
   useEffect(() => {
     const loadAllImages = () => {
       setProducts((prev) => {
@@ -180,42 +222,50 @@ export default function Home() {
             try {
               const imageData = JSON.parse(saved)
               const imageUrls = imageData.map((item) => item.url || item)
+              console.log(`${product.storageKey} loaded:`, imageUrls.length, 'images')
               return { ...product, images: imageUrls }
             } catch (error) {
               console.error(`Error loading ${product.storageKey}:`, error)
               return product
             }
           }
-          return { ...product, images: [] } // Empty array if no images in localStorage
+          return { ...product, images: [] }
         })
       })
     }
 
     loadAllImages()
 
-    const handleStorageChange = () => loadAllImages()
+    const handleStorageChange = () => {
+      console.log('Storage change detected - reloading all product images')
+      loadAllImages()
+    }
+
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('adminMediaUpdated', handleStorageChange)
+
+    // Polling as backup
+    const pollInterval = setInterval(() => {
+      loadAllImages()
+    }, 3000)
 
     return () => {
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('adminMediaUpdated', handleStorageChange)
+      clearInterval(pollInterval)
     }
   }, [])
 
-  const loadHeroImages = () => {
-    const saved = localStorage.getItem('heroImages')
-    if (saved) {
-      try {
-        setHeroImages(JSON.parse(saved))
-      } catch (e) {
-        console.error('Error loading hero images:', e)
-        setHeroImages([]) // Empty array if error
-      }
-    } else {
-      setHeroImages([]) // Empty array if no hero images
+  // Reload on tab focus
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log('Tab focused - reloading all images')
+      window.location.reload()
     }
-  }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [])
 
   const currentImage = heroImages[currentImageIndex]
 
@@ -300,7 +350,7 @@ export default function Home() {
               index % 2 !== 0 ? 'lg:flex-row-reverse' : ''
             }`}>
               <div className={`${index % 2 !== 0 ? 'lg:order-2' : 'lg:order-1'}`}>
-                <ImageCarousel images={product.images} />
+                <ImageCarousel images={product.images} storageKey={product.storageKey} />
               </div>
 
               <div className={`${index % 2 !== 0 ? 'lg:order-1' : 'lg:order-2'}`}>
