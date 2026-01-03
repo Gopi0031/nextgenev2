@@ -38,37 +38,39 @@ export default function AdminDashboard() {
   useEffect(() => {
     loadAllMedia()
     loadAllProducts()
-  }, [])
+  }, [activeSection])
 
-  const loadAllMedia = () => {
+  const loadAllMedia = async () => {
     const allMedia = {}
-    sections.forEach((section) => {
+    for (const section of sections) {
       if (section.type === 'gallery') {
         try {
-          const saved = localStorage.getItem(section.storageKey)
-          allMedia[section.id] = saved ? JSON.parse(saved) : []
+          const response = await fetch(`/api/storage?key=${section.storageKey}`)
+          const data = await response.json()
+          allMedia[section.id] = data || []
         } catch (e) {
           console.error(`Error loading ${section.storageKey}:`, e)
           allMedia[section.id] = []
         }
       }
-    })
+    }
     setMedia(allMedia)
   }
 
-  const loadAllProducts = () => {
+  const loadAllProducts = async () => {
     const allProducts = {}
-    sections.forEach((section) => {
+    for (const section of sections) {
       if (section.type === 'products') {
         try {
-          const saved = localStorage.getItem(section.storageKey)
-          allProducts[section.id] = saved ? JSON.parse(saved) : []
+          const response = await fetch(`/api/storage?key=${section.storageKey}`)
+          const data = await response.json()
+          allProducts[section.id] = data || []
         } catch (e) {
           console.error(`Error loading ${section.storageKey}:`, e)
           allProducts[section.id] = []
         }
       }
-    })
+    }
     setProducts(allProducts)
   }
 
@@ -139,12 +141,17 @@ export default function AdminDashboard() {
       const existingMedia = media[activeSection] || []
       const updatedMedia = [...existingMedia, ...uploadedUrls]
 
-      localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedMedia))
+      // Save to API instead of localStorage
+      await fetch('/api/storage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: currentSection.storageKey,
+          data: updatedMedia
+        })
+      })
+
       setMedia((prev) => ({ ...prev, [activeSection]: updatedMedia }))
-
-      window.dispatchEvent(new Event('adminMediaUpdated'))
-      window.dispatchEvent(new Event('storage'))
-
       setUploadStatus(`✅ ${uploadedUrls.length} image(s) uploaded successfully!`)
     } catch (error) {
       console.error('Upload error:', error)
@@ -205,7 +212,7 @@ export default function AdminDashboard() {
     }))
   }
 
-  const saveProduct = () => {
+  const saveProduct = async () => {
     if (!productForm.name || !productForm.description || !productForm.images || productForm.images.length === 0) {
       setUploadStatus('❌ Please fill name, description and add at least one image')
       setTimeout(() => setUploadStatus(''), 3000)
@@ -225,11 +232,17 @@ export default function AdminDashboard() {
       setUploadStatus('✅ Product added successfully!')
     }
 
-    localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedProducts))
-    setProducts((prev) => ({ ...prev, [activeSection]: updatedProducts }))
+    // Save to API instead of localStorage
+    await fetch('/api/storage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: currentSection.storageKey,
+        data: updatedProducts
+      })
+    })
 
-    window.dispatchEvent(new Event('adminMediaUpdated'))
-    window.dispatchEvent(new Event('storage'))
+    setProducts((prev) => ({ ...prev, [activeSection]: updatedProducts }))
 
     // Reset form
     setProductForm({
@@ -262,19 +275,24 @@ export default function AdminDashboard() {
     }
   }
 
-  const deleteProduct = (index) => {
+  const deleteProduct = async (index) => {
     if (!confirm('Delete this product?')) return
 
     const currentSection = sections.find((s) => s.id === activeSection)
     const currentProducts = products[activeSection] || []
     const updatedProducts = currentProducts.filter((_, i) => i !== index)
 
-    localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedProducts))
+    // Save to API
+    await fetch('/api/storage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: currentSection.storageKey,
+        data: updatedProducts
+      })
+    })
+
     setProducts((prev) => ({ ...prev, [activeSection]: updatedProducts }))
-
-    window.dispatchEvent(new Event('adminMediaUpdated'))
-    window.dispatchEvent(new Event('storage'))
-
     setUploadStatus('✅ Product deleted successfully!')
     setTimeout(() => setUploadStatus(''), 2000)
   }
@@ -287,12 +305,18 @@ export default function AdminDashboard() {
 
     try {
       const updatedMedia = currentMedia.filter((_, i) => i !== index)
-      localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedMedia))
+      
+      // Save to API
+      await fetch('/api/storage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: currentSection.storageKey,
+          data: updatedMedia
+        })
+      })
+
       setMedia((prev) => ({ ...prev, [activeSection]: updatedMedia }))
-
-      window.dispatchEvent(new Event('adminMediaUpdated'))
-      window.dispatchEvent(new Event('storage'))
-
       setUploadStatus('✅ Image deleted successfully!')
       setTimeout(() => setUploadStatus(''), 2000)
     } catch (error) {
@@ -301,17 +325,23 @@ export default function AdminDashboard() {
     }
   }
 
-  const clearAllImages = () => {
+  const clearAllImages = async () => {
     const currentSectionData = sections.find((s) => s.id === activeSection)
     if (!confirm(`Delete ALL images from ${currentSectionData?.name}?`)) return
 
     const currentSection = sections.find((s) => s.id === activeSection)
-    localStorage.setItem(currentSection.storageKey, JSON.stringify([]))
+    
+    // Save to API
+    await fetch('/api/storage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: currentSection.storageKey,
+        data: []
+      })
+    })
+
     setMedia((prev) => ({ ...prev, [activeSection]: [] }))
-
-    window.dispatchEvent(new Event('adminMediaUpdated'))
-    window.dispatchEvent(new Event('storage'))
-
     setUploadStatus('✅ All images cleared!')
     setTimeout(() => setUploadStatus(''), 2000)
   }
@@ -330,7 +360,7 @@ export default function AdminDashboard() {
             Admin <span className="text-[#A8E600]">Dashboard</span>
           </h1>
           <p className="text-[#F8F9FA]/70 text-lg">
-            Manage all website content - Images stored in Cloudinary
+            Manage all website content - Works everywhere (Cloudinary + Server Storage)
           </p>
         </div>
 
@@ -465,7 +495,7 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {/* PRODUCT MANAGEMENT - Same as before but with Cloudinary upload */}
+        {/* PRODUCT MANAGEMENT */}
         {isProductSection && (
           <>
             <div className="bg-[#1a1d21] rounded-3xl p-8 mb-8 border-2 border-[#A8E600]/30">
@@ -716,13 +746,13 @@ export default function AdminDashboard() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">ℹ️</div>
             <div>
-              <h3 className="text-[#F8F9FA] font-bold mb-2">Cloudinary Storage Benefits</h3>
+              <h3 className="text-[#F8F9FA] font-bold mb-2">System Benefits</h3>
               <ul className="text-[#F8F9FA]/70 text-sm space-y-1">
-                <li>• ✅ No storage quota limits</li>
-                <li>• ✅ Fast CDN delivery worldwide</li>
-                <li>• ✅ Automatic image optimization</li>
-                <li>• ✅ Images stored as URLs (lightweight)</li>
-                <li>• ✅ Professional cloud infrastructure</li>
+                <li>• ✅ Works everywhere (incognito, all browsers, all devices)</li>
+                <li>• ✅ Cloudinary for fast image delivery</li>
+                <li>• ✅ Server storage for data persistence</li>
+                <li>• ✅ No localStorage limitations</li>
+                <li>• ✅ Real-time updates across all sessions</li>
               </ul>
             </div>
           </div>

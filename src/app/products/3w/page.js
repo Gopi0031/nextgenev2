@@ -80,63 +80,30 @@ const ProductCarousel = ({ images }) => {
 
 export default function ThreeWheelerProducts() {
   const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  // Load products with auto-refresh
-  const loadProducts = () => {
+  // Load products from API
+  const loadProducts = async () => {
     try {
-      const saved = localStorage.getItem('threeWheelerProducts')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        console.log('3W Products loaded:', parsed.length)
-        setProducts(parsed)
-      } else {
-        setProducts([])
-      }
-    } catch (e) {
-      console.error('Error loading 3W products:', e)
+      setLoading(true)
+      const response = await fetch('/api/storage?key=threeWheelerProducts')
+      const data = await response.json()
+      console.log('3W Products loaded:', data.length)
+      setProducts(data || [])
+    } catch (error) {
+      console.error('Error loading 3W products:', error)
       setProducts([])
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     loadProducts()
-    
-    const handleUpdate = () => {
-      console.log('Storage event detected - reloading 3W products')
-      loadProducts()
-    }
 
-    window.addEventListener('storage', handleUpdate)
-    window.addEventListener('adminMediaUpdated', handleUpdate)
-
-    // Polling as backup (checks every 3 seconds)
-    const pollInterval = setInterval(() => {
-      const saved = localStorage.getItem('threeWheelerProducts')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (parsed.length !== products.length) {
-          console.log('Poll detected change in 3W products')
-          loadProducts()
-        }
-      }
-    }, 3000)
-    
-    return () => {
-      window.removeEventListener('storage', handleUpdate)
-      window.removeEventListener('adminMediaUpdated', handleUpdate)
-      clearInterval(pollInterval)
-    }
-  }, [products.length])
-
-  // Reload on tab focus
-  useEffect(() => {
-    const handleFocus = () => {
-      console.log('Tab focused - reloading 3W products')
-      loadProducts()
-    }
-
-    window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
+    // Poll every 5 seconds for updates
+    const interval = setInterval(loadProducts, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   return (
@@ -184,7 +151,12 @@ export default function ThreeWheelerProducts() {
       {/* Products Grid */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          {products.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-6 animate-bounce">🚐</div>
+              <h2 className="text-3xl font-black text-[#212529] mb-4">Loading Products...</h2>
+            </div>
+          ) : products.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-8xl mb-6">🚐</div>
               <h2 className="text-4xl font-black text-[#212529] mb-4">No Products Available</h2>

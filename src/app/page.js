@@ -3,34 +3,24 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-// Image Carousel Component with Auto-Reload
-const ImageCarousel = ({ images, autoPlayInterval = 3000, storageKey }) => {
+const ImageCarousel = ({ images, autoPlayInterval = 3000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [loadedImages, setLoadedImages] = useState(images)
 
-  // Reload images when they change
   useEffect(() => {
-    setLoadedImages(images)
-  }, [images])
-
-  // Auto-play carousel
-  useEffect(() => {
-    if (!loadedImages || loadedImages.length === 0) return
-
+    if (!images || images.length === 0) return
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % loadedImages.length)
+      setCurrentIndex((prev) => (prev + 1) % images.length)
     }, autoPlayInterval)
-
     return () => clearInterval(interval)
-  }, [loadedImages, autoPlayInterval])
+  }, [images, autoPlayInterval])
 
-  if (!loadedImages || loadedImages.length === 0) {
+  if (!images || images.length === 0) {
     return (
       <div className="flex items-center justify-center h-96 bg-gradient-to-br from-[#007BFF]/20 to-[#A8E600]/20 rounded-3xl border-2 border-dashed border-[#007BFF]/30">
         <div className="text-center p-8">
           <div className="text-6xl mb-4">📷</div>
           <p className="text-xl text-[#212529] font-bold mb-2">No Images Yet</p>
-          <p className="text-sm text-[#212529]/60">Please upload images from the admin dashboard</p>
+          <p className="text-sm text-[#212529]/60">Please upload images from admin dashboard</p>
         </div>
       </div>
     )
@@ -38,50 +28,38 @@ const ImageCarousel = ({ images, autoPlayInterval = 3000, storageKey }) => {
 
   return (
     <div className="relative h-96 rounded-3xl overflow-hidden shadow-2xl">
-      {loadedImages.map((img, index) => (
+      {images.map((img, index) => (
         <div
-          key={`carousel-img-${index}`}
+          key={`carousel-${index}`}
           className="absolute inset-0 transition-opacity duration-500"
           style={{ opacity: currentIndex === index ? 1 : 0 }}
         >
-          <Image
-            src={img}
-            alt={`Product ${index + 1}`}
-            fill
-            className="object-contain p-4 bg-white"
-          />
+          <Image src={img} alt={`Product ${index + 1}`} fill className="object-contain p-4 bg-white" />
         </div>
       ))}
 
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
-        {loadedImages.map((_, index) => (
+        {images.map((_, index) => (
           <button
-            key={`carousel-dot-${index}`}
+            key={`dot-${index}`}
             onClick={() => setCurrentIndex(index)}
             className={`h-2 rounded-full transition-all ${
               currentIndex === index ? 'bg-[#A8E600] w-8' : 'bg-white/60 hover:bg-white w-2'
             }`}
-            aria-label={`Go to image ${index + 1}`}
           />
         ))}
       </div>
 
-      {loadedImages.length > 1 && (
+      {images.length > 1 && (
         <>
           <button
-            onClick={() => setCurrentIndex((prev) => (prev - 1 + loadedImages.length) % loadedImages.length)}
+            onClick={() => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)}
             className="absolute left-4 top-1/2 -translate-y-1/2 bg-[#007BFF]/80 hover:bg-[#007BFF] text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl font-bold transition z-10"
-            aria-label="Previous image"
-          >
-            ‹
-          </button>
+          >‹</button>
           <button
-            onClick={() => setCurrentIndex((prev) => (prev + 1) % loadedImages.length)}
+            onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
             className="absolute right-4 top-1/2 -translate-y-1/2 bg-[#007BFF]/80 hover:bg-[#007BFF] text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl font-bold transition z-10"
-            aria-label="Next image"
-          >
-            ›
-          </button>
+          >›</button>
         </>
       )}
     </div>
@@ -91,14 +69,13 @@ const ImageCarousel = ({ images, autoPlayInterval = 3000, storageKey }) => {
 export default function Home() {
   const [heroImages, setHeroImages] = useState([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
   const [products, setProducts] = useState([
     {
       id: 1,
       name: "NextGen 2-Wheeler Vehicles",
       category: "2-Wheeler",
       tagline: "Urban Mobility Redefined",
-      description: "Our 2-wheeler electric vehicles are designed for the modern urban commuter who values efficiency, sustainability, and style. With a sleek aerodynamic design and advanced battery technology, these vehicles offer an impressive range of up to 50KM to 120KM on a single charge. Whether you're navigating busy city streets or cruising through suburban roads, our 2-wheelers deliver a smooth, silent, and eco-friendly ride. Equipped with fast charging capabilities, digital display, and eco mode, they combine cutting-edge technology with practical features to make your daily commute effortless and enjoyable.",
+      description: "Our 2-wheeler electric vehicles are designed for the modern urban commuter who values efficiency, sustainability, and style. With a sleek aerodynamic design and advanced battery technology, these vehicles offer an impressive range of up to 50KM to 120KM on a single charge.",
       images: [],
       storageKey: 'twoWheelerUrls',
       features: [
@@ -113,7 +90,7 @@ export default function Home() {
       name: "NextGen 3-Wheeler Vehicles",
       category: "3-Wheeler",
       tagline: "Built for Business",
-      description: "NextGen 3-wheelers are engineered for commercial excellence, offering unmatched reliability and performance for businesses across India. Built with a robust chassis and powerful electric motor, these vehicles can handle heavy payloads of up to 500 kg while maintaining exceptional energy efficiency. With a range of up to 150 KM to 300 KM, our 3-wheelers are perfect for logistics, delivery services, and passenger transport. The low maintenance design and long-lasting battery ensure minimal downtime and maximum productivity. Experience the future of commercial mobility with vehicles that are as tough as your business demands, yet gentle on the environment.",
+      description: "NextGen 3-wheelers are engineered for commercial excellence, offering unmatched reliability and performance for businesses across India. Built with a robust chassis and powerful electric motor, these vehicles can handle heavy payloads of up to 500 kg while maintaining exceptional energy efficiency.",
       images: [],
       storageKey: 'threeWheelerUrls',
       features: [
@@ -128,7 +105,7 @@ export default function Home() {
       name: "EV Lithium-ion Battery Repair",
       category: "Battery & Pack Repair",
       tagline: "Restore Range. Extend Life.",
-      description: "Specialised repair of EV lithium-ion batteries including cell testing, module replacement, BMS diagnostics, and capacity restoration. Issues such as range drop, auto cut-off, overheating, or charging faults are identified using advanced testing tools and repaired with high-quality cells and components. Every serviced pack is balanced, safety-tested, and load-tested for reliable daily performance.",
+      description: "Specialised repair of EV lithium-ion batteries including cell testing, module replacement, BMS diagnostics, and capacity restoration.",
       images: [],
       storageKey: 'batteryRepairUrls',
       features: [
@@ -143,7 +120,7 @@ export default function Home() {
       name: "EV Charger Repair & Service",
       category: "Charger Repair",
       tagline: "Safe & Fast Charging, Always.",
-      description: "Complete service and repair of EV chargers and power supplies including fan failure, no output, slow charging, fuse damage, and connector issues. Internal PCB, cooling system, MOSFETs, and protection circuits are inspected and repaired with compatible components. Each charger is calibrated for correct output voltage and current to protect your battery and deliver fast, consistent charging.",
+      description: "Complete service and repair of EV chargers and power supplies including fan failure, no output, slow charging, fuse damage, and connector issues.",
       images: [],
       storageKey: 'chargerRepairUrls',
       features: [
@@ -152,55 +129,25 @@ export default function Home() {
         { label: 'Speed', value: 'Fast Charging', icon: '⚡' },
         { label: 'Safety', value: 'Protection Circuits', icon: '🛡️' }
       ]
-    },
+    }
   ])
 
-  // Load hero images with auto-refresh
+  // Load hero images from API
   useEffect(() => {
-    const loadHeroImages = () => {
-      const saved = localStorage.getItem('heroImages')
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved)
-          console.log('Hero images loaded:', parsed.length)
-          setHeroImages(parsed)
-        } catch (e) {
-          console.error('Error loading hero images:', e)
-          setHeroImages([])
-        }
-      } else {
-        setHeroImages([])
+    const loadHeroImages = async () => {
+      try {
+        const response = await fetch('/api/storage?key=heroImages')
+        const data = await response.json()
+        setHeroImages(data)
+      } catch (error) {
+        console.error('Error loading hero images:', error)
       }
     }
 
     loadHeroImages()
-
-    const handleUpdate = () => {
-      console.log('Storage event detected - reloading hero images')
-      loadHeroImages()
-    }
-
-    window.addEventListener('storage', handleUpdate)
-    window.addEventListener('adminMediaUpdated', handleUpdate)
-
-    // Polling as backup (checks every 3 seconds)
-    const pollInterval = setInterval(() => {
-      const saved = localStorage.getItem('heroImages')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (parsed.length !== heroImages.length) {
-          console.log('Poll detected change in hero images')
-          loadHeroImages()
-        }
-      }
-    }, 3000)
-
-    return () => {
-      window.removeEventListener('storage', handleUpdate)
-      window.removeEventListener('adminMediaUpdated', handleUpdate)
-      clearInterval(pollInterval)
-    }
-  }, [heroImages.length])
+    const interval = setInterval(loadHeroImages, 5000) // Poll every 5 seconds
+    return () => clearInterval(interval)
+  }, [])
 
   // Hero image auto-slide
   useEffect(() => {
@@ -212,59 +159,28 @@ export default function Home() {
     }
   }, [heroImages.length])
 
-  // Load all product images with auto-refresh
+  // Load all product images from API
   useEffect(() => {
-    const loadAllImages = () => {
-      setProducts((prev) => {
-        return prev.map((product) => {
-          const saved = localStorage.getItem(product.storageKey)
-          if (saved) {
-            try {
-              const imageData = JSON.parse(saved)
-              const imageUrls = imageData.map((item) => item.url || item)
-              console.log(`${product.storageKey} loaded:`, imageUrls.length, 'images')
-              return { ...product, images: imageUrls }
-            } catch (error) {
-              console.error(`Error loading ${product.storageKey}:`, error)
-              return product
-            }
+    const loadAllImages = async () => {
+      const updatedProducts = await Promise.all(
+        products.map(async (product) => {
+          try {
+            const response = await fetch(`/api/storage?key=${product.storageKey}`)
+            const data = await response.json()
+            const imageUrls = data.map((item) => item.url || item)
+            return { ...product, images: imageUrls }
+          } catch (error) {
+            console.error(`Error loading ${product.storageKey}:`, error)
+            return product
           }
-          return { ...product, images: [] }
         })
-      })
+      )
+      setProducts(updatedProducts)
     }
 
     loadAllImages()
-
-    const handleStorageChange = () => {
-      console.log('Storage change detected - reloading all product images')
-      loadAllImages()
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('adminMediaUpdated', handleStorageChange)
-
-    // Polling as backup
-    const pollInterval = setInterval(() => {
-      loadAllImages()
-    }, 3000)
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('adminMediaUpdated', handleStorageChange)
-      clearInterval(pollInterval)
-    }
-  }, [])
-
-  // Reload on tab focus
-  useEffect(() => {
-    const handleFocus = () => {
-      console.log('Tab focused - reloading all images')
-      window.location.reload()
-    }
-
-    window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
+    const interval = setInterval(loadAllImages, 5000) // Poll every 5 seconds
+    return () => clearInterval(interval)
   }, [])
 
   const currentImage = heroImages[currentImageIndex]
@@ -290,19 +206,19 @@ export default function Home() {
         )}
 
         <div className="relative z-10 text-center text-[#F8F9FA] px-4 max-w-6xl mx-auto">
-          <p className="text-xl md:text-2xl mb-4 opacity-90 font-bold tracking-wider animate-fade-in">ELECTRIC REVOLUTION</p>
+          <p className="text-xl md:text-2xl mb-4 opacity-90 font-bold tracking-wider">ELECTRIC REVOLUTION</p>
           
-          <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tight animate-slide-up">
+          <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tight">
             DRIVE THE<br/>
             <span className="text-[#A8E600]">FUTURE</span>
           </h1>
           
-          <p className="text-xl md:text-2xl mb-12 opacity-95 font-semibold max-w-4xl mx-auto animate-fade-in-delay">
+          <p className="text-xl md:text-2xl mb-12 opacity-95 font-semibold max-w-4xl mx-auto">
             Experience India's most advanced electric 2-wheelers, 3-wheelers,
             and expert EV battery & charger repair services.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-delay-2">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/products">
               <button className="bg-[#A8E600] hover:bg-[#98d600] text-[#212529] font-bold py-5 px-12 rounded-full transition-all transform hover:scale-110 shadow-2xl text-xl">
                 EXPLORE VEHICLES →
@@ -325,7 +241,6 @@ export default function Home() {
                 className={`h-3 rounded-full transition-all ${
                   index === currentImageIndex ? 'bg-[#A8E600] w-12' : 'bg-white/60 hover:bg-white w-3'
                 }`}
-                aria-label={`Go to hero image ${index + 1}`}
               />
             ))}
           </div>
@@ -341,29 +256,19 @@ export default function Home() {
       {products.map((product, index) => (
         <section
           key={`product-${product.id}`}
-          className={`py-20 md:py-32 px-4 md:px-8 ${
-            index % 2 === 0 ? 'bg-[#FAF8F1]' : 'bg-white'
-          }`}
+          className={`py-20 md:py-32 px-4 md:px-8 ${index % 2 === 0 ? 'bg-[#FAF8F1]' : 'bg-white'}`}
         >
           <div className="max-w-7xl mx-auto">
-            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${
-              index % 2 !== 0 ? 'lg:flex-row-reverse' : ''
-            }`}>
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center`}>
               <div className={`${index % 2 !== 0 ? 'lg:order-2' : 'lg:order-1'}`}>
-                <ImageCarousel images={product.images} storageKey={product.storageKey} />
+                <ImageCarousel images={product.images} />
               </div>
 
               <div className={`${index % 2 !== 0 ? 'lg:order-1' : 'lg:order-2'}`}>
                 <p className="text-[#007BFF] font-bold text-lg mb-2">{product.category}</p>
-                <h2 className="text-4xl md:text-6xl font-black mb-4 text-[#212529]">
-                  {product.name}
-                </h2>
-                <p className="text-2xl text-[#A8E600] font-bold mb-6">
-                  {product.tagline}
-                </p>
-                <p className="text-[#212529] text-lg leading-relaxed mb-8">
-                  {product.description}
-                </p>
+                <h2 className="text-4xl md:text-6xl font-black mb-4 text-[#212529]">{product.name}</h2>
+                <p className="text-2xl text-[#A8E600] font-bold mb-6">{product.tagline}</p>
+                <p className="text-[#212529] text-lg leading-relaxed mb-8">{product.description}</p>
 
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   {product.features.map((feature, idx) => (
@@ -408,8 +313,8 @@ export default function Home() {
               { icon: '🌱', title: 'Clean Mobility', desc: 'Supporting green transportation across India' },
               { icon: '🛡️', title: '3 Year Warranty', desc: 'On battery & motor for new vehicles' },
               { icon: '💬', title: '24/7 Support', desc: 'Pan-India assistance for vehicles & repairs' }
-            ].map((feature, index) => (
-              <div key={`why-${index}`} className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-2xl transition-all text-center border-2 border-transparent hover:border-[#A8E600] group">
+            ].map((feature, i) => (
+              <div key={`why-${i}`} className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-2xl transition-all text-center border-2 border-transparent hover:border-[#A8E600] group">
                 <div className="text-8xl mb-6 transform group-hover:scale-125 transition-transform">{feature.icon}</div>
                 <h3 className="text-2xl font-black mb-3 text-[#212529]">{feature.title}</h3>
                 <p className="text-[#212529]/70 font-semibold text-lg">{feature.desc}</p>
