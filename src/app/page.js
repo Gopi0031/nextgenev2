@@ -143,7 +143,7 @@ export default function Home() {
     }
 
     loadHeroImages()
-    const interval = setInterval(loadHeroImages, 10000)
+    const interval = setInterval(loadHeroImages, 1000)
     return () => clearInterval(interval)
   }, [])
 
@@ -177,7 +177,7 @@ export default function Home() {
     }
 
     loadAllImages()
-    const interval = setInterval(loadAllImages, 10000)
+    const interval = setInterval(loadAllImages, 1000)
     return () => clearInterval(interval)
   }, [])
 

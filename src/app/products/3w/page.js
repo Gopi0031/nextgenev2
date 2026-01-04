@@ -98,7 +98,7 @@ export default function ThreeWheelerProducts() {
     loadProducts()
     
     // Refresh every 10 seconds
-    const interval = setInterval(loadProducts, 10000)
+    const interval = setInterval(loadProducts, 1000)
     
     return () => clearInterval(interval)
   }, [])
