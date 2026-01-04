@@ -80,29 +80,26 @@ const ProductCarousel = ({ images }) => {
 
 export default function ThreeWheelerProducts() {
   const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
 
   // Load products from API
   const loadProducts = async () => {
     try {
-      setLoading(true)
-      const response = await fetch('/api/storage?key=threeWheelerProducts')
+      const response = await fetch('/api/media')
       const data = await response.json()
-      console.log('3W Products loaded:', data.length)
-      setProducts(data || [])
+      console.log('3W Products loaded:', data.threeWheelerProducts?.length || 0)
+      setProducts(data.threeWheelerProducts || [])
     } catch (error) {
       console.error('Error loading 3W products:', error)
       setProducts([])
-    } finally {
-      setLoading(false)
     }
   }
 
   useEffect(() => {
     loadProducts()
-
-    // Poll every 5 seconds for updates
-    const interval = setInterval(loadProducts, 5000)
+    
+    // Refresh every 10 seconds
+    const interval = setInterval(loadProducts, 10000)
+    
     return () => clearInterval(interval)
   }, [])
 
@@ -151,12 +148,7 @@ export default function ThreeWheelerProducts() {
       {/* Products Grid */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          {loading ? (
-            <div className="text-center py-20">
-              <div className="text-6xl mb-6 animate-bounce">🚐</div>
-              <h2 className="text-3xl font-black text-[#212529] mb-4">Loading Products...</h2>
-            </div>
-          ) : products.length === 0 ? (
+          {products.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-8xl mb-6">🚐</div>
               <h2 className="text-4xl font-black text-[#212529] mb-4">No Products Available</h2>

@@ -1,4 +1,3 @@
-// src/app/api/upload-signature/route.js
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -14,14 +13,22 @@ export async function POST(req) {
     const body = await req.json();
     const { paramsToSign } = body;
 
+    if (!paramsToSign) {
+      return NextResponse.json({ error: 'Missing paramsToSign' }, { status: 400 });
+    }
+
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,
       process.env.CLOUDINARY_API_SECRET
     );
 
-    return NextResponse.json({ signature });
+    return NextResponse.json({ 
+      signature,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME
+    });
   } catch (err) {
-    console.error("❌ Signature generation error:", err);
+    console.error("Signature error:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

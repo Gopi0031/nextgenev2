@@ -34,7 +34,7 @@ const ImageCarousel = ({ images, autoPlayInterval = 3000 }) => {
           className="absolute inset-0 transition-opacity duration-500"
           style={{ opacity: currentIndex === index ? 1 : 0 }}
         >
-          <Image src={img} alt={`Product ${index + 1}`} fill className="object-contain p-4 bg-white" />
+          <Image src={typeof img === 'string' ? img : img.url} alt={`Product ${index + 1}`} fill className="object-contain p-4 bg-white" />
         </div>
       ))}
 
@@ -134,16 +134,16 @@ export default function Home() {
   useEffect(() => {
     const loadHeroImages = async () => {
       try {
-        const response = await fetch('/api/storage?key=heroImages')
+        const response = await fetch('/api/media')
         const data = await response.json()
-        setHeroImages(data)
+        setHeroImages(data.heroImages || [])
       } catch (error) {
         console.error('Error loading hero images:', error)
       }
     }
 
     loadHeroImages()
-    const interval = setInterval(loadHeroImages, 5000) // Poll every 5 seconds
+    const interval = setInterval(loadHeroImages, 10000)
     return () => clearInterval(interval)
   }, [])
 
@@ -160,24 +160,24 @@ export default function Home() {
   // Load all product images from API
   useEffect(() => {
     const loadAllImages = async () => {
-      const updatedProducts = await Promise.all(
-        products.map(async (product) => {
-          try {
-            const response = await fetch(`/api/storage?key=${product.storageKey}`)
-            const data = await response.json()
-            const imageUrls = data.map((item) => item.url || item)
-            return { ...product, images: imageUrls }
-          } catch (error) {
-            console.error(`Error loading ${product.storageKey}:`, error)
-            return product
-          }
+      try {
+        const response = await fetch('/api/media')
+        const data = await response.json()
+
+        const updatedProducts = products.map(product => {
+          const imageData = data[product.storageKey] || []
+          const imageUrls = imageData.map(item => item.url || item)
+          return { ...product, images: imageUrls }
         })
-      )
-      setProducts(updatedProducts)
+
+        setProducts(updatedProducts)
+      } catch (error) {
+        console.error('Error loading images:', error)
+      }
     }
 
     loadAllImages()
-    const interval = setInterval(loadAllImages, 5000) // Poll every 5 seconds
+    const interval = setInterval(loadAllImages, 10000)
     return () => clearInterval(interval)
   }, [])
 
@@ -192,7 +192,7 @@ export default function Home() {
             <div 
               className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
               style={{ 
-                backgroundImage: `url(${currentImage.url})`,
+                backgroundImage: `url(${typeof currentImage === 'string' ? currentImage : currentImage.url})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}

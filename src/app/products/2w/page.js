@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-// Product Image Carousel Component
 const ProductCarousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -81,80 +80,33 @@ const ProductCarousel = ({ images }) => {
 export default function TwoWheelerProducts() {
   const [products, setProducts] = useState([])
 
-  // Load products with auto-refresh
-  const loadProducts = () => {
+  // Load products from API
+  const loadProducts = async () => {
     try {
-      const saved = localStorage.getItem('twoWheelerProducts')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        console.log('2W Products loaded:', parsed.length)
-        setProducts(parsed)
-      } else {
-        setProducts([])
-      }
-    } catch (e) {
-      console.error('Error loading 2W products:', e)
-      setProducts([])
+      const response = await fetch('/api/media')
+      const data = await response.json()
+      setProducts(data.twoWheelerProducts || [])
+    } catch (error) {
+      console.error('Error loading 2W products:', error)
     }
   }
 
   useEffect(() => {
     loadProducts()
-    
-    const handleUpdate = () => {
-      console.log('Storage event detected - reloading 2W products')
-      loadProducts()
-    }
-
-    window.addEventListener('storage', handleUpdate)
-    window.addEventListener('adminMediaUpdated', handleUpdate)
-
-    // Polling as backup (checks every 3 seconds)
-    const pollInterval = setInterval(() => {
-      const saved = localStorage.getItem('twoWheelerProducts')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (parsed.length !== products.length) {
-          console.log('Poll detected change in 2W products')
-          loadProducts()
-        }
-      }
-    }, 3000)
-    
-    return () => {
-      window.removeEventListener('storage', handleUpdate)
-      window.removeEventListener('adminMediaUpdated', handleUpdate)
-      clearInterval(pollInterval)
-    }
-  }, [products.length])
-
-  // Reload on tab focus
-  useEffect(() => {
-    const handleFocus = () => {
-      console.log('Tab focused - reloading 2W products')
-      loadProducts()
-    }
-
-    window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
+    const interval = setInterval(loadProducts, 10000)
+    return () => clearInterval(interval)
   }, [])
 
   return (
     <main className="min-h-screen bg-[#FFFFF0] pt-24 pb-12">
-      {/* Floating 3-Wheeler Icon - Middle Right */}
       <Link href="/products/3w">
         <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 group cursor-pointer">
           <div className="relative">
-            {/* Pulsing glow ring */}
             <div className="absolute -inset-2 bg-gradient-to-r from-[#A8E600] via-[#007BFF] to-[#A8E600] rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse"></div>
-            
-            {/* Main icon button */}
             <div className="relative bg-gradient-to-r from-[#A8E600] to-[#007BFF] p-5 rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-110 group-hover:rotate-12">
               <div className="text-5xl">🚐</div>
             </div>
           </div>
-          
-          {/* Tooltip */}
           <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-[#212529] text-white px-5 py-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap font-bold text-base shadow-2xl group-hover:mr-5">
             <span className="flex items-center gap-2">
               View 3-Wheelers
@@ -164,7 +116,6 @@ export default function TwoWheelerProducts() {
         </div>
       </Link>
 
-      {/* Header Section */}
       <section className="bg-gradient-to-r from-[#007BFF] to-[#A8E600] py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-black text-white mb-6">
@@ -181,7 +132,6 @@ export default function TwoWheelerProducts() {
         </div>
       </section>
 
-      {/* Products Grid */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           {products.length === 0 ? (
@@ -206,12 +156,10 @@ export default function TwoWheelerProducts() {
                     index % 2 !== 0 ? 'lg:flex-row-reverse' : ''
                   }`}
                 >
-                  {/* Product Images */}
                   <div className={`${index % 2 !== 0 ? 'lg:order-2' : 'lg:order-1'}`}>
                     <ProductCarousel images={product.images || []} />
                   </div>
 
-                  {/* Product Details */}
                   <div className={`${index % 2 !== 0 ? 'lg:order-1' : 'lg:order-2'}`}>
                     <div className="bg-white rounded-3xl p-8 shadow-xl border-2 border-[#007BFF]/20">
                       <h2 className="text-4xl md:text-5xl font-black mb-4 text-[#212529]">
@@ -228,7 +176,6 @@ export default function TwoWheelerProducts() {
                         {product.description}
                       </p>
 
-                      {/* Specifications Grid */}
                       <div className="grid grid-cols-2 gap-4 mb-8">
                         {product.range && (
                           <div className="bg-[#FFFFF0] p-4 rounded-xl border-2 border-[#007BFF]/20">
@@ -237,7 +184,6 @@ export default function TwoWheelerProducts() {
                             <div className="text-lg font-black text-[#212529]">{product.range}</div>
                           </div>
                         )}
-                        
                         {product.topSpeed && (
                           <div className="bg-[#FFFFF0] p-4 rounded-xl border-2 border-[#007BFF]/20">
                             <div className="text-3xl mb-2">🏁</div>
@@ -245,7 +191,6 @@ export default function TwoWheelerProducts() {
                             <div className="text-lg font-black text-[#212529]">{product.topSpeed}</div>
                           </div>
                         )}
-                        
                         {product.motor && (
                           <div className="bg-[#FFFFF0] p-4 rounded-xl border-2 border-[#007BFF]/20">
                             <div className="text-3xl mb-2">⚙️</div>
@@ -253,7 +198,6 @@ export default function TwoWheelerProducts() {
                             <div className="text-lg font-black text-[#212529]">{product.motor}</div>
                           </div>
                         )}
-                        
                         {product.chargingTime && (
                           <div className="bg-[#FFFFF0] p-4 rounded-xl border-2 border-[#007BFF]/20">
                             <div className="text-3xl mb-2">⚡</div>
@@ -261,7 +205,6 @@ export default function TwoWheelerProducts() {
                             <div className="text-lg font-black text-[#212529]">{product.chargingTime}</div>
                           </div>
                         )}
-                        
                         {product.batteryCapacity && (
                           <div className="bg-[#FFFFF0] p-4 rounded-xl border-2 border-[#007BFF]/20">
                             <div className="text-3xl mb-2">🔌</div>
@@ -271,7 +214,6 @@ export default function TwoWheelerProducts() {
                         )}
                       </div>
 
-                      {/* Action Buttons */}
                       <div className="flex flex-col sm:flex-row gap-4">
                         <Link href="/contact" className="flex-1">
                           <button className="w-full bg-[#A8E600] hover:bg-[#98d600] text-[#212529] font-bold py-4 px-8 rounded-full transition transform hover:scale-105 shadow-lg">
@@ -293,7 +235,6 @@ export default function TwoWheelerProducts() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-[#007BFF] to-[#A8E600]">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
