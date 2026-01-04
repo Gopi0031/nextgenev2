@@ -44,35 +44,35 @@ export async function POST(request) {
 
     // Email to admin
     const adminMailOptions = {
-  from: process.env.EMAIL_USER,
-  to: process.env.EMAIL_USER,
-  replyTo: email,
-  subject: `[NextGen EV] New Contact: ${subject}`,
-  html: `
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      replyTo: email,
+      subject: `[NextGen EV] New Contact: ${subject}`,
+      html: `
     <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f8f9fa; }
+          body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #FFFFF0; }
           .container { max-width: 650px; margin: 0 auto; padding: 20px; }
           .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-          .header { background: linear-gradient(135deg, #4ADE80 0%, #22c55e 100%); padding: 30px 24px; text-align: center; }
-          .header h1 { margin: 0; color: white; font-size: 28px; font-weight: 700; }
-          .header p { margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; }
+          .header { background: linear-gradient(135deg, #A8E600 0%, #98d600 100%); padding: 30px 24px; text-align: center; }
+          .header h1 { margin: 0; color: #36454F; font-size: 28px; font-weight: 700; }
+          .header p { margin: 8px 0 0 0; color: #36454F; font-size: 14px; opacity: 0.9; }
           .content { padding: 32px 24px; }
           .field { margin-bottom: 24px; }
-          .field-label { display: block; font-size: 12px; font-weight: 700; color: #4ADE80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-          .field-value { font-size: 15px; color: #1f2937; font-weight: 500; }
-          .field-value a { color: #000803ff; text-decoration: none; }
+          .field-label { display: block; font-size: 12px; font-weight: 700; color: #A8E600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+          .field-value { font-size: 15px; color: #36454F; font-weight: 500; }
+          .field-value a { color: #36454F; text-decoration: none; }
           .field-value a:hover { text-decoration: underline; }
           .divider { height: 1px; background: #e5e7eb; margin: 24px 0; }
-          .message-box { background: linear-gradient(135deg, #f0fdf4 0%, #f0fdfa 100%); border-left: 4px solid #4ADE80; padding: 16px; border-radius: 8px; margin-top: 16px; }
-          .message-label { display: block; font-size: 12px; font-weight: 700; color: #4ADE80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
-          .message-text { font-size: 14px; color: #374151; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
-          .footer { background: #f9fafb; padding: 20px 24px; text-align: center; border-top: 1px solid #e5e7eb; }
-          .footer-text { margin: 0; font-size: 12px; color: #6b7280; }
-          .badge { display: inline-block; background: #4ADE80; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 12px; }
+          .message-box { background: linear-gradient(135deg, #f0fdf4 0%, #FFFFF0 100%); border-left: 4px solid #A8E600; padding: 16px; border-radius: 8px; margin-top: 16px; }
+          .message-label { display: block; font-size: 12px; font-weight: 700; color: #A8E600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+          .message-text { font-size: 14px; color: #36454F; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
+          .footer { background: #FFFFF0; padding: 20px 24px; text-align: center; border-top: 1px solid #e5e7eb; }
+          .footer-text { margin: 0; font-size: 12px; color: #36454F; opacity: 0.7; }
+          .badge { display: inline-block; background: #A8E600; color: #36454F; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 12px; }
           .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
           @media (max-width: 600px) {
             .container { padding: 12px; }
@@ -128,47 +128,47 @@ export async function POST(request) {
       </body>
     </html>
   `,
-};
+    };
 
-const adminResult = await transporter.sendMail(adminMailOptions);
-console.log("✓ Admin email sent:", adminResult.messageId);
+    const adminResult = await transporter.sendMail(adminMailOptions);
+    console.log("✓ Admin email sent:", adminResult.messageId);
 
-// Email to user (confirmation)
-const userMailOptions = {
-  from: process.env.EMAIL_USER,
-  to: email,
-  subject: "✓ Message Received - NextGen EV",
-  html: `
+    // Email to user (confirmation)
+    const userMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "✓ Message Received - NextGen EV",
+      html: `
     <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f8f9fa; }
+          body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #FFFFF0; }
           .container { max-width: 650px; margin: 0 auto; padding: 20px; }
           .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-          .header { background: linear-gradient(135deg, #4ADE80 0%, #22c55e 100%); padding: 40px 24px; text-align: center; }
-          .header h1 { margin: 0; color: white; font-size: 28px; font-weight: 700; }
+          .header { background: linear-gradient(135deg, #A8E600 0%, #98d600 100%); padding: 40px 24px; text-align: center; }
+          .header h1 { margin: 0; color: #36454F; font-size: 28px; font-weight: 700; }
           .header .checkmark { font-size: 48px; margin-bottom: 12px; }
           .content { padding: 32px 24px; text-align: center; }
-          .greeting { font-size: 16px; color: #1f2937; margin-bottom: 16px; font-weight: 500; }
-          .message-text { font-size: 14px; color: #6b7280; line-height: 1.7; margin-bottom: 32px; }
+          .greeting { font-size: 16px; color: #36454F; margin-bottom: 16px; font-weight: 500; }
+          .message-text { font-size: 14px; color: #36454F; opacity: 0.8; line-height: 1.7; margin-bottom: 32px; }
           .timeline { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 32px 0; }
           .timeline-item { text-align: center; }
-          .timeline-item .circle { width: 32px; height: 32px; background: #dbeafe; border: 2px solid #4ADE80; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #4ADE80; margin: 0 auto 8px; }
-          .timeline-item .text { font-size: 12px; color: #6b7280; }
+          .timeline-item .circle { width: 32px; height: 32px; background: #FFFFF0; border: 2px solid #A8E600; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #A8E600; margin: 0 auto 8px; }
+          .timeline-item .text { font-size: 12px; color: #36454F; opacity: 0.7; }
           .divider { width: 20px; height: 2px; background: #e5e7eb; }
-          .message-box { background: linear-gradient(135deg, #f0fdf4 0%, #f0fdfa 100%); padding: 20px; border-radius: 8px; text-align: left; margin: 32px 0; border-left: 4px solid #4ADE80; }
-          .message-label { display: block; font-size: 12px; font-weight: 700; color: #4ADE80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
-          .message-text-content { font-size: 14px; color: #374151; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
-          .cta-button { display: inline-block; background: linear-gradient(135deg, #4ADE80 0%, #22c55e 100%); color: white; padding: 12px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 24px; transition: transform 0.2s; }
+          .message-box { background: linear-gradient(135deg, #f0fdf4 0%, #FFFFF0 100%); padding: 20px; border-radius: 8px; text-align: left; margin: 32px 0; border-left: 4px solid #A8E600; }
+          .message-label { display: block; font-size: 12px; font-weight: 700; color: #A8E600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+          .message-text-content { font-size: 14px; color: #36454F; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
+          .cta-button { display: inline-block; background: linear-gradient(135deg, #A8E600 0%, #98d600 100%); color: #36454F; padding: 12px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 24px; transition: transform 0.2s; }
           .cta-button:hover { transform: scale(1.05); }
-          .footer { background: #f9fafb; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb; }
-          .footer-heading { font-size: 12px; font-weight: 700; color: #4ADE80; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
-          .footer-text { margin: 8px 0; font-size: 13px; color: #6b7280; }
+          .footer { background: #FFFFF0; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb; }
+          .footer-heading { font-size: 12px; font-weight: 700; color: #A8E600; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+          .footer-text { margin: 8px 0; font-size: 13px; color: #36454F; opacity: 0.7; }
           .footer-links { margin-top: 16px; }
-          .footer-links a { color: #4ADE80; text-decoration: none; margin: 0 12px; font-size: 12px; font-weight: 600; }
-          .badge { display: inline-block; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+          .footer-links a { color: #A8E600; text-decoration: none; margin: 0 12px; font-size: 12px; font-weight: 600; }
+          .badge { display: inline-block; background: #A8E600; color: #36454F; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 8px; }
           @media (max-width: 600px) {
             .container { padding: 12px; }
             .content { padding: 20px 16px; }
@@ -226,10 +226,10 @@ const userMailOptions = {
       </body>
     </html>
   `,
-};
+    };
 
-const userResult = await transporter.sendMail(userMailOptions);
-console.log("✓ User confirmation sent:", userResult.messageId);
+    const userResult = await transporter.sendMail(userMailOptions);
+    console.log("✓ User confirmation sent:", userResult.messageId);
 
     return new Response(
       JSON.stringify({
