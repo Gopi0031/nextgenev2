@@ -38,41 +38,37 @@ export default function AdminDashboard() {
   useEffect(() => {
     loadAllMedia()
     loadAllProducts()
-  }, [activeSection])
+  }, [])
 
-  const loadAllMedia = async () => {
+  const loadAllMedia = () => {
     const allMedia = {}
-    for (const section of sections) {
+    sections.forEach((section) => {
       if (section.type === 'gallery') {
         try {
-          const response = await fetch(`/api/storage?key=${section.storageKey}`)
-          const data = await response.json()
-          console.log(`✅ Loaded ${section.storageKey}:`, data.length, 'items')
-          allMedia[section.id] = data || []
+          const saved = localStorage.getItem(section.storageKey)
+          allMedia[section.id] = saved ? JSON.parse(saved) : []
         } catch (e) {
-          console.error(`❌ Error loading ${section.storageKey}:`, e)
+          console.error(`Error loading ${section.storageKey}:`, e)
           allMedia[section.id] = []
         }
       }
-    }
+    })
     setMedia(allMedia)
   }
 
-  const loadAllProducts = async () => {
+  const loadAllProducts = () => {
     const allProducts = {}
-    for (const section of sections) {
+    sections.forEach((section) => {
       if (section.type === 'products') {
         try {
-          const response = await fetch(`/api/storage?key=${section.storageKey}`)
-          const data = await response.json()
-          console.log(`✅ Loaded ${section.storageKey}:`, data.length, 'products')
-          allProducts[section.id] = data || []
+          const saved = localStorage.getItem(section.storageKey)
+          allProducts[section.id] = saved ? JSON.parse(saved) : []
         } catch (e) {
-          console.error(`❌ Error loading ${section.storageKey}:`, e)
+          console.error(`Error loading ${section.storageKey}:`, e)
           allProducts[section.id] = []
         }
       }
-    }
+    })
     setProducts(allProducts)
   }
 
@@ -96,7 +92,7 @@ export default function AdminDashboard() {
     return await response.json()
   }
 
-  // Gallery Image Upload - FIXED WITH PROPER ERROR HANDLING
+  // Gallery Image Upload (Hero, Home sections, Battery, Charger)
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files)
     if (files.length === 0) return
@@ -143,40 +139,23 @@ export default function AdminDashboard() {
       const existingMedia = media[activeSection] || []
       const updatedMedia = [...existingMedia, ...uploadedUrls]
 
-      // FIXED: Proper API call with logging
-      console.log('📤 Saving to API:', { key: currentSection.storageKey, itemCount: updatedMedia.length })
-      
-      const response = await fetch('/api/storage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: currentSection.storageKey,
-          data: updatedMedia
-        })
-      })
-
-      const result = await response.json()
-      console.log('📥 API Response:', result)
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to save to server')
-      }
-
+      localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedMedia))
       setMedia((prev) => ({ ...prev, [activeSection]: updatedMedia }))
-      setUploadStatus(`✅ ${uploadedUrls.length} image(s) uploaded and saved!`)
-      
-      // Reload to confirm save
-      await loadAllMedia()
+
+      window.dispatchEvent(new Event('adminMediaUpdated'))
+      window.dispatchEvent(new Event('storage'))
+
+      setUploadStatus(`✅ ${uploadedUrls.length} image(s) uploaded successfully!`)
     } catch (error) {
-      console.error('❌ Upload error:', error)
-      setUploadStatus(`❌ Upload failed: ${error.message}`)
+      console.error('Upload error:', error)
+      setUploadStatus('❌ Upload failed. Please try again.')
     } finally {
       setIsUploading(false)
       setTimeout(() => setUploadStatus(''), 4000)
     }
   }
 
-  // Product Image Upload
+  // Product Image Upload (for product form)
   const handleProductImageUpload = async (e) => {
     const files = Array.from(e.target.files)
     if (files.length === 0) return
@@ -226,8 +205,7 @@ export default function AdminDashboard() {
     }))
   }
 
-  // Save Product - FIXED
-  const saveProduct = async () => {
+  const saveProduct = () => {
     if (!productForm.name || !productForm.description || !productForm.images || productForm.images.length === 0) {
       setUploadStatus('❌ Please fill name, description and add at least one image')
       setTimeout(() => setUploadStatus(''), 3000)
@@ -241,56 +219,34 @@ export default function AdminDashboard() {
     if (editingProductIndex !== null) {
       updatedProducts = [...currentProducts]
       updatedProducts[editingProductIndex] = { ...productForm, id: Date.now() }
+      setUploadStatus('✅ Product updated successfully!')
     } else {
       updatedProducts = [...currentProducts, { ...productForm, id: Date.now() }]
+      setUploadStatus('✅ Product added successfully!')
     }
 
-    try {
-      console.log('📤 Saving product to API:', { key: currentSection.storageKey, productCount: updatedProducts.length })
-      
-      const response = await fetch('/api/storage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: currentSection.storageKey,
-          data: updatedProducts
-        })
-      })
+    localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedProducts))
+    setProducts((prev) => ({ ...prev, [activeSection]: updatedProducts }))
 
-      const result = await response.json()
-      console.log('📥 API Response:', result)
+    window.dispatchEvent(new Event('adminMediaUpdated'))
+    window.dispatchEvent(new Event('storage'))
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to save product')
-      }
-
-      setProducts((prev) => ({ ...prev, [activeSection]: updatedProducts }))
-      setUploadStatus(editingProductIndex !== null ? '✅ Product updated successfully!' : '✅ Product added successfully!')
-
-      // Reset form
-      setProductForm({
-        name: '',
-        description: '',
-        price: '',
-        range: '',
-        topSpeed: '',
-        motor: '',
-        chargingTime: '',
-        batteryCapacity: '',
-        payload: '',
-        images: []
-      })
-      setEditingProductIndex(null)
-      setShowProductForm(false)
-      
-      // Reload to confirm save
-      await loadAllProducts()
-      setTimeout(() => setUploadStatus(''), 2000)
-    } catch (error) {
-      console.error('❌ Save error:', error)
-      setUploadStatus(`❌ Save failed: ${error.message}`)
-      setTimeout(() => setUploadStatus(''), 3000)
-    }
+    // Reset form
+    setProductForm({
+      name: '',
+      description: '',
+      price: '',
+      range: '',
+      topSpeed: '',
+      motor: '',
+      chargingTime: '',
+      batteryCapacity: '',
+      payload: '',
+      images: []
+    })
+    setEditingProductIndex(null)
+    setShowProductForm(false)
+    setTimeout(() => setUploadStatus(''), 2000)
   }
 
   const editProduct = (index) => {
@@ -306,46 +262,23 @@ export default function AdminDashboard() {
     }
   }
 
-  // Delete Product - FIXED
-  const deleteProduct = async (index) => {
+  const deleteProduct = (index) => {
     if (!confirm('Delete this product?')) return
 
     const currentSection = sections.find((s) => s.id === activeSection)
     const currentProducts = products[activeSection] || []
     const updatedProducts = currentProducts.filter((_, i) => i !== index)
 
-    try {
-      console.log('📤 Deleting product, saving to API:', { key: currentSection.storageKey, productCount: updatedProducts.length })
-      
-      const response = await fetch('/api/storage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: currentSection.storageKey,
-          data: updatedProducts
-        })
-      })
+    localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedProducts))
+    setProducts((prev) => ({ ...prev, [activeSection]: updatedProducts }))
 
-      const result = await response.json()
-      console.log('📥 API Response:', result)
+    window.dispatchEvent(new Event('adminMediaUpdated'))
+    window.dispatchEvent(new Event('storage'))
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to delete product')
-      }
-
-      setProducts((prev) => ({ ...prev, [activeSection]: updatedProducts }))
-      setUploadStatus('✅ Product deleted successfully!')
-      
-      await loadAllProducts()
-      setTimeout(() => setUploadStatus(''), 2000)
-    } catch (error) {
-      console.error('❌ Delete error:', error)
-      setUploadStatus(`❌ Delete failed: ${error.message}`)
-      setTimeout(() => setUploadStatus(''), 3000)
-    }
+    setUploadStatus('✅ Product deleted successfully!')
+    setTimeout(() => setUploadStatus(''), 2000)
   }
 
-  // Delete Image - FIXED
   const deleteImage = async (index) => {
     if (!confirm('Delete this image?')) return
 
@@ -354,73 +287,33 @@ export default function AdminDashboard() {
 
     try {
       const updatedMedia = currentMedia.filter((_, i) => i !== index)
-      
-      console.log('📤 Deleting image, saving to API:', { key: currentSection.storageKey, itemCount: updatedMedia.length })
-      
-      const response = await fetch('/api/storage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: currentSection.storageKey,
-          data: updatedMedia
-        })
-      })
-
-      const result = await response.json()
-      console.log('📥 API Response:', result)
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to delete image')
-      }
-
+      localStorage.setItem(currentSection.storageKey, JSON.stringify(updatedMedia))
       setMedia((prev) => ({ ...prev, [activeSection]: updatedMedia }))
+
+      window.dispatchEvent(new Event('adminMediaUpdated'))
+      window.dispatchEvent(new Event('storage'))
+
       setUploadStatus('✅ Image deleted successfully!')
-      
-      await loadAllMedia()
       setTimeout(() => setUploadStatus(''), 2000)
     } catch (error) {
-      console.error('❌ Delete error:', error)
-      setUploadStatus(`❌ Delete failed: ${error.message}`)
-      setTimeout(() => setUploadStatus(''), 3000)
+      console.error('Delete error:', error)
+      setUploadStatus('❌ Delete failed')
     }
   }
 
-  // Clear All Images - FIXED
-  const clearAllImages = async () => {
+  const clearAllImages = () => {
     const currentSectionData = sections.find((s) => s.id === activeSection)
     if (!confirm(`Delete ALL images from ${currentSectionData?.name}?`)) return
 
     const currentSection = sections.find((s) => s.id === activeSection)
-    
-    try {
-      console.log('📤 Clearing all images, saving to API:', { key: currentSection.storageKey })
-      
-      const response = await fetch('/api/storage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: currentSection.storageKey,
-          data: []
-        })
-      })
+    localStorage.setItem(currentSection.storageKey, JSON.stringify([]))
+    setMedia((prev) => ({ ...prev, [activeSection]: [] }))
 
-      const result = await response.json()
-      console.log('📥 API Response:', result)
+    window.dispatchEvent(new Event('adminMediaUpdated'))
+    window.dispatchEvent(new Event('storage'))
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to clear images')
-      }
-
-      setMedia((prev) => ({ ...prev, [activeSection]: [] }))
-      setUploadStatus('✅ All images cleared!')
-      
-      await loadAllMedia()
-      setTimeout(() => setUploadStatus(''), 2000)
-    } catch (error) {
-      console.error('❌ Clear error:', error)
-      setUploadStatus(`❌ Clear failed: ${error.message}`)
-      setTimeout(() => setUploadStatus(''), 3000)
-    }
+    setUploadStatus('✅ All images cleared!')
+    setTimeout(() => setUploadStatus(''), 2000)
   }
 
   const currentSectionData = sections.find((s) => s.id === activeSection)
@@ -437,10 +330,7 @@ export default function AdminDashboard() {
             Admin <span className="text-[#A8E600]">Dashboard</span>
           </h1>
           <p className="text-[#F8F9FA]/70 text-lg">
-            Manage all website content - Works everywhere (Cloudinary + Server Storage)
-          </p>
-          <p className="text-[#A8E600] text-sm mt-2">
-            Open Browser Console (F12) to see detailed logs
+            Manage all website content - Images stored in Cloudinary
           </p>
         </div>
 
@@ -575,7 +465,7 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {/* PRODUCT MANAGEMENT */}
+        {/* PRODUCT MANAGEMENT - Same as before but with Cloudinary upload */}
         {isProductSection && (
           <>
             <div className="bg-[#1a1d21] rounded-3xl p-8 mb-8 border-2 border-[#A8E600]/30">
@@ -826,17 +716,14 @@ export default function AdminDashboard() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">ℹ️</div>
             <div>
-              <h3 className="text-[#F8F9FA] font-bold mb-2">System Benefits</h3>
+              <h3 className="text-[#F8F9FA] font-bold mb-2">Cloudinary Storage Benefits</h3>
               <ul className="text-[#F8F9FA]/70 text-sm space-y-1">
-                <li>• ✅ Works everywhere (incognito, all browsers, all devices)</li>
-                <li>• ✅ Cloudinary for fast image delivery</li>
-                <li>• ✅ Server storage for data persistence</li>
-                <li>• ✅ No localStorage limitations</li>
-                <li>• ✅ Real-time updates across all sessions</li>
+                <li>• ✅ No storage quota limits</li>
+                <li>• ✅ Fast CDN delivery worldwide</li>
+                <li>• ✅ Automatic image optimization</li>
+                <li>• ✅ Images stored as URLs (lightweight)</li>
+                <li>• ✅ Professional cloud infrastructure</li>
               </ul>
-              <p className="text-[#A8E600] text-sm mt-3 font-bold">
-                💡 Check Browser Console (F12) for detailed API logs
-              </p>
             </div>
           </div>
         </div>

@@ -80,8 +80,6 @@ export default function Home() {
       storageKey: 'twoWheelerUrls',
       features: [
         { label: 'Range', value: '50-120 km', icon: '🔋' },
-        { label: 'Top Speed', value: '75 km/h', icon: '🏁' },
-        { label: 'Motor', value: '3000W BLDC', icon: '⚙️' },
         { label: 'Charging', value: '4-5 hours', icon: '⚡' }
       ]
     },
