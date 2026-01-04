@@ -72,25 +72,79 @@ export default function AdminDashboard() {
     setProducts(allProducts)
   }
 
-  // Upload to Cloudinary
+  // ✅ UPDATED: Client-side signed upload to Cloudinary
   const uploadToCloudinary = async (file, folder = 'nextgen-ev') => {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('folder', folder)
-    formData.append('resourceType', 'image')
+    try {
+      // Step 1: Prepare upload parameters
+      const timestamp = Math.round(Date.now() / 1000);
+      const uploadParams = {
+        timestamp,
+        folder,
+      };
 
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    })
+      // Step 2: Get signature from your API
+      const signatureResponse = await fetch('/api/upload-signature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paramsToSign: uploadParams }),
+      });
 
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error || 'Upload failed')
+      if (!signatureResponse.ok) {
+        const errorData = await signatureResponse.text();
+        console.error('❌ Signature API error:', errorData);
+        throw new Error('Failed to get upload signature');
+      }
+
+      const { signature } = await signatureResponse.json();
+
+      // Step 3: Get Cloudinary credentials from environment
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
+
+      if (!cloudName || !apiKey) {
+        throw new Error('Missing Cloudinary credentials in environment variables');
+      }
+
+      // Step 4: Create FormData for direct Cloudinary upload
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('api_key', apiKey);
+      formData.append('timestamp', timestamp);
+      formData.append('signature', signature);
+      formData.append('folder', folder);
+
+      // Step 5: Upload directly to Cloudinary (bypassing your server)
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        const error = await uploadResponse.json();
+        console.error('❌ Cloudinary upload error:', error);
+        throw new Error(error.error?.message || 'Cloudinary upload failed');
+      }
+
+      const result = await uploadResponse.json();
+      console.log('✅ Upload successful:', result.secure_url);
+
+      return {
+        url: result.secure_url,
+        publicId: result.public_id,
+        resourceType: result.resource_type,
+        format: result.format,
+        width: result.width,
+        height: result.height,
+        bytes: result.bytes,
+      };
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      throw error;
     }
-
-    return await response.json()
-  }
+  };
 
   // Gallery Image Upload (Hero, Home sections, Battery, Charger)
   const handleFileUpload = async (e) => {
@@ -330,7 +384,7 @@ export default function AdminDashboard() {
             Admin <span className="text-[#A8E600]">Dashboard</span>
           </h1>
           <p className="text-[#F8F9FA]/70 text-lg">
-            Manage all website content - Images stored in Cloudinary
+            Manage all website content - Secure signed uploads to Cloudinary
           </p>
         </div>
 
@@ -415,9 +469,9 @@ export default function AdminDashboard() {
                   <p className="text-[#F8F9FA] text-lg font-bold mb-2">
                     {isUploading ? 'Uploading to Cloudinary...' : 'Click to upload images'}
                   </p>
-                  <p className="text-[#F8F9FA]/60">Stored securely in the cloud</p>
+                  <p className="text-[#F8F9FA]/60">Direct client-side signed upload</p>
                   <p className="text-[#F8F9FA]/40 text-sm mt-2">
-                    No storage limits • Fast CDN delivery
+                    Secure • Fast CDN delivery • No server processing
                   </p>
                 </label>
               </div>
@@ -465,7 +519,7 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {/* PRODUCT MANAGEMENT - Same as before but with Cloudinary upload */}
+        {/* PRODUCT MANAGEMENT */}
         {isProductSection && (
           <>
             <div className="bg-[#1a1d21] rounded-3xl p-8 mb-8 border-2 border-[#A8E600]/30">
@@ -623,7 +677,7 @@ export default function AdminDashboard() {
                     >
                       <div className="text-4xl mb-2">☁️</div>
                       <p className="text-[#F8F9FA] font-bold">Click to add product images</p>
-                      <p className="text-[#F8F9FA]/60 text-sm">Uploaded to Cloudinary CDN</p>
+                      <p className="text-[#F8F9FA]/60 text-sm">Secure signed upload to Cloudinary</p>
                     </label>
 
                     {productForm.images && productForm.images.length > 0 && (
@@ -716,13 +770,13 @@ export default function AdminDashboard() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">ℹ️</div>
             <div>
-              <h3 className="text-[#F8F9FA] font-bold mb-2">Cloudinary Storage Benefits</h3>
+              <h3 className="text-[#F8F9FA] font-bold mb-2">Client-Side Signed Upload Benefits</h3>
               <ul className="text-[#F8F9FA]/70 text-sm space-y-1">
-                <li>• ✅ No storage quota limits</li>
-                <li>• ✅ Fast CDN delivery worldwide</li>
-                <li>• ✅ Automatic image optimization</li>
-                <li>• ✅ Images stored as URLs (lightweight)</li>
-                <li>• ✅ Professional cloud infrastructure</li>
+                <li>• ✅ Secure: API secret never exposed to client</li>
+                <li>• ✅ Fast: Direct browser → Cloudinary (no server bottleneck)</li>
+                <li>• ✅ Scalable: No server resource usage for uploads</li>
+                <li>• ✅ CDN delivery: Lightning-fast global image delivery</li>
+                <li>• ✅ Auto-optimization: Images optimized automatically</li>
               </ul>
             </div>
           </div>

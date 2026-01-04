@@ -9,30 +9,19 @@ cloudinary.config({
   secure: true,
 });
 
-export async function GET(req) {
+export async function POST(req) {
   try {
-    // Get folder from query
-    const { searchParams } = new URL(req.url);
-    const folder = searchParams.get("folder") || "";
+    const body = await req.json();
+    const { paramsToSign } = body;
 
-    const timestamp = Math.round(Date.now() / 1000);
-
-    // SIGN EXACT FOLDER + TIMESTAMP
     const signature = cloudinary.utils.api_sign_request(
-      { folder, timestamp },
+      paramsToSign,
       process.env.CLOUDINARY_API_SECRET
     );
 
-    return NextResponse.json({
-      timestamp,
-      signature,
-      folder,
-      apiKey: process.env.CLOUDINARY_API_KEY,
-      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    });
-
+    return NextResponse.json({ signature });
   } catch (err) {
-    console.error("Signature error:", err);
+    console.error("❌ Signature generation error:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
