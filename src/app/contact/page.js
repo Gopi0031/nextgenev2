@@ -113,7 +113,7 @@ export default function ContactPage() {
       {/* Hero Section - Electric Blue & Lime Green Gradient */}
       <div className="py-16 md:py-24 px-4 md:px-8 bg-[#FAF8F1]">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-[#212529]">Contact Us</h1>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-[#98d600]">Contact Us</h1>
           <div className="w-24 h-1 bg-[#212529] mx-auto mb-8"></div>
           <p className="text-xl text-[#212529] max-w-3xl mx-auto">
             Get in touch with us for any inquiries or support
@@ -126,7 +126,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form - Ivory Background */}
             <div className="bg-[#FAF8F1] rounded-2xl p-8 shadow-lg border-2 border-[#007BFF]">
-              <h2 className="text-2xl font-bold mb-6 text-[#212529]">Send us a Message</h2>
+              <h2 className="text-2xl font-bold mb-6 text-[#98d600]">Send us a Message</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-[#212529] font-semibold mb-2">Full Name *</label>
@@ -245,7 +245,7 @@ export default function ContactPage() {
             {/* Contact Information */}
             <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold mb-6 text-[#212529]">Get in Touch</h2>
+                <h2 className="text-2xl font-bold mb-6 text-[#98d600]">Get in Touch</h2>
                 <p className="text-[#212529] mb-8">
                   Have questions? We're here to help! Reach out to us through any of the channels below.
                 </p>
@@ -261,8 +261,10 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold mb-1 text-[#212529]">Headquarters</h3>
-                    <p className="text-[#212529] opacity-80">NextGen EV Headquarters<br />India</p>
+                    <h3 className="font-bold mb-1 text-[#212529]">Location</h3>
+                    <p className="text-[#212529] opacity-80">Near Saptha Kanikalamma Temple, Tirupati Main Road,
+Doddipalle, Chittoor - 517001
+Andhra Pradesh, India</p>
                   </div>
                 </div>
                 
@@ -276,11 +278,11 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold mb-1 text-[#212529]">Phone</h3>
                     <a
-                      href="tel:+919133913975"
+                      href="tel:+91 81067 24737"
                       onClick={() => toast('📞 Opening phone dialer...', { duration: 2000 })}
                       className="text-[#007BFF] hover:underline font-semibold"
                     >
-                      +91 9133 913 975
+                      +91 81067 24737
                     </a>
                   </div>
                 </div>
@@ -295,18 +297,11 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold mb-1 text-[#212529]">Email</h3>
                     <a
-                      href="mailto:info@nextgenev.com"
+                      href="mailto:support@nextgeneev.com"
                       onClick={() => toast('📧 Opening email client...', { duration: 2000 })}
                       className="text-[#007BFF] hover:underline block font-semibold"
                     >
-                      info@nextgenev.com
-                    </a>
-                    <a
-                      href="mailto:support@nextgenev.com"
-                      onClick={() => toast('📧 Opening email client...', { duration: 2000 })}
-                      className="text-[#007BFF] hover:underline block font-semibold"
-                    >
-                      support@nextgenev.com
+                      support@nextgeneev.com
                     </a>
                   </div>
                 </div>

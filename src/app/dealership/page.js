@@ -229,7 +229,7 @@ const handleSubmit = async (e) => {
       {/* Benefits Section */}
       <section className="py-16 md:py-24 px-4 md:px-8 bg-[#FAF8F1]">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 text-white">Partnership Benefits</h2>
+          <h2 className="text-4xl font-bold text-center mb-12 text-[#A8E600]">Partnership Benefits</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -242,8 +242,8 @@ const handleSubmit = async (e) => {
             ].map((benefit, index) => (
               <div key={index} className={`bg-white p-6 rounded-xl shadow-lg text-center hover:shadow-2xl transition border-2 ${benefit.color} hover:scale-105 transform`}>
                 <div className="text-5xl mb-4">{benefit.icon}</div>
-                <h3 className="text-xl font-bold mb-2 text-white">{benefit.title}</h3>
-                <p className="text-white opacity-80">{benefit.desc}</p>
+                <h3 className="text-xl font-bold mb-2 text-black">{benefit.title}</h3>
+                <p className="text-black opacity-80">{benefit.desc}</p>
               </div>
             ))}
           </div>
