@@ -40,7 +40,7 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen pt-16">
-      <div className="py-16 md:py-24 px-4 md:px-8 bg-white">
+      <div className="py-16 md:py-24 px-4 md:px-8 bg-[#FAF8F1]">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl font-bold text-center mb-8">Our Services</h1>
           <div className="w-24 h-1 bg-blue-600 mx-auto mb-12"></div>

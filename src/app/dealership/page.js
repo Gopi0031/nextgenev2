@@ -66,36 +66,35 @@ const handleSubmit = async (e) => {
     })
   }
 
-  const dealerships = [
-    {
-      city: 'Mumbai',
-      address: '123 Main Street, Andheri West, Mumbai, Maharashtra 400058',
-      phone: '+91 9876543210',
-      email: 'mumbai@nextgenev.com',
-    },
-    {
-      city: 'Delhi',
-      address: '456 Park Avenue, Connaught Place, New Delhi 110001',
-      phone: '+91 9876543211',
-      email: 'delhi@nextgenev.com',
-    },
-    {
-      city: 'Bangalore',
-      address: '789 Tech Park, Whitefield, Bangalore, Karnataka 560066',
-      phone: '+91 9876543212',
-      email: 'bangalore@nextgenev.com',
-    },
-    {
-      city: 'Chennai',
-      address: '321 Beach Road, Adyar, Chennai, Tamil Nadu 600020',
-      phone: '+91 9876543213',
-      email: 'chennai@nextgenev.com',
-    },
-  ]
+  // const dealerships = [
+  //   {
+  //     city: 'Mumbai',
+  //     address: '123 Main Street, Andheri West, Mumbai, Maharashtra 400058',
+  //     phone: '+91 9876543210',
+  //     email: 'mumbai@nextgenev.com',
+  //   },
+  //   {
+  //     city: 'Delhi',
+  //     address: '456 Park Avenue, Connaught Place, New Delhi 110001',
+  //     phone: '+91 9876543211',
+  //     email: 'delhi@nextgenev.com',
+  //   },
+  //   {
+  //     city: 'Bangalore',
+  //     address: '789 Tech Park, Whitefield, Bangalore, Karnataka 560066',
+  //     phone: '+91 9876543212',
+  //     email: 'bangalore@nextgenev.com',
+  //   },
+  //   {
+  //     city: 'Chennai',
+  //     address: '321 Beach Road, Adyar, Chennai, Tamil Nadu 600020',
+  //     phone: '+91 9876543213',
+  //     email: 'chennai@nextgenev.com',
+  //   },
+  // ]
 
   return (
     <div className="min-h-screen pt-16 bg-[#FAF8F1]">
-    {/* Dealership Application Form - Charcoal Background */}
       <section className="py-16 md:py-24 px-4 md:px-8">
         <div className="max-w-5xl mx-auto bg-[#FAF8F1] rounded-xl">
           <div className="text-center mb-12">
@@ -106,9 +105,9 @@ const handleSubmit = async (e) => {
             </p>
           </div>
 
-          <div className="bg-[#A8E600] rounded-3xl p-8 md:p-12 shadow-2xl m-2">
+          <div className="bg-gray-500 rounded-3xl p-8 md:p-12 shadow-2xl m-2">
             {submitted && (
-              <div className="bg-[#A8E600]/20 border-2 border-[#A8E600] text-[#212529] px-6 py-4 rounded-lg mb-8 flex items-center">
+              <div className="bg-[#A8E600]/20 border-2 border-[#A8E600] text-white px-6 py-4 rounded-lg mb-8 flex items-center">
                 <svg className="w-6 h-6 text-[#A8E600] mr-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
@@ -119,82 +118,82 @@ const handleSubmit = async (e) => {
             <form onSubmit={handleSubmit} className="space-y-9">
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-[#212529] font-bold mb-2">Full Name *</label>
+                  <label className="block text-white font-bold mb-2">Full Name *</label>
                   <input 
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-[#212529] bg-[#FAF8F1]"
+                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/10 text-white bg-[#FAF8F1]/10"
                     placeholder="Enter name"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-[#212529] font-bold mb-2">Email Address *</label>
+                  <label className="block text-white font-bold mb-2">Email Address *</label>
                   <input 
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-[#212529] bg-[#FAF8F1]"
+                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-white bg-[#FAF8F1]/10"
                     placeholder="Enter Mail"
                     required
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-[#212529] font-bold mb-2">Phone Number *</label>
+                  <label className="block text-white font-bold mb-2">Phone Number *</label>
                   <input 
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-[#212529] bg-[#FAF8F1]"
-                    placeholder="+91 XXXXX XXXXX"
+                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-white bg-[#FAF8F1]/10"
+                    placeholder="XXXXX XXXXX"
                     required
                   />
                 </div>
                 
-                <div>
-                  <label className="block text-[#212529] font-bold mb-2">Business Name *</label>
+                {/* <div>
+                  <label className="block text-white font-bold mb-2">Business Name *</label>
                   <input 
                     type="text"
                     name="businessName"
                     value={formData.businessName}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-[#212529] bg-[#FAF8F1]"
+                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-white bg-[#FAF8F1]"
                     placeholder="Your Company Name"
                     required
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[#212529] font-bold mb-2">City *</label>
+                  <label className="block text-white font-bold mb-2">City *</label>
                   <input 
                     type="text"
                     name="city"
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-[#212529] bg-[#FAF8F1]"
+                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-white bg-[#FAF8F1]/10"
                     placeholder="Enter your city"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-[#212529] font-bold mb-2">State *</label>
+                  <label className="block text-white font-bold mb-2">State *</label>
                   <input 
                     type="text"
                     name="state"
                     value={formData.state}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-[#212529] bg-[#FAF8F1]"
+                    className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-white bg-[#FAF8F1]/10"
                     placeholder="Enter your state"
                     required
                   />
@@ -204,12 +203,12 @@ const handleSubmit = async (e) => {
              
               
               <div>
-                <label className="block text-[#212529] font-bold mb-2">Additional Information</label>
+                <label className="block text-white font-bold mb-2">Additional Information</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-[#212529] bg-[#FAF8F1] h-32"
+                  className="w-full px-4 py-3 border-2 border-[#212529]/20 rounded-lg focus:border-[#007BFF] focus:outline-none focus:ring-2 focus:ring-[#007BFF]/20 text-white bg-[#FAF8F1]/10 h-32"
                   placeholder="Tell us about your business plans and location preferences..."
                 ></textarea>
               </div>
@@ -217,7 +216,7 @@ const handleSubmit = async (e) => {
               <div className="text-center">
                 <button 
                   type="submit" 
-                  className="flex-1 bg-[#007BFF] hover:bg-[#007BFF] text-[#F8F9FA] font-bold py-4 px-8 rounded-lg transition transform hover:scale-105 shadow-lg"
+                  className="flex-1 bg-[#A8E600] hover:bg-[#007BFF] text-[#212729] font-bold py-4 px-8 rounded-lg transition transform hover:scale-105 shadow-lg"
                 >
                   Submit Application
                 </button>
@@ -230,7 +229,7 @@ const handleSubmit = async (e) => {
       {/* Benefits Section */}
       <section className="py-16 md:py-24 px-4 md:px-8 bg-[#FAF8F1]">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 text-[#212529]">Partnership Benefits</h2>
+          <h2 className="text-4xl font-bold text-center mb-12 text-white">Partnership Benefits</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -243,8 +242,8 @@ const handleSubmit = async (e) => {
             ].map((benefit, index) => (
               <div key={index} className={`bg-white p-6 rounded-xl shadow-lg text-center hover:shadow-2xl transition border-2 ${benefit.color} hover:scale-105 transform`}>
                 <div className="text-5xl mb-4">{benefit.icon}</div>
-                <h3 className="text-xl font-bold mb-2 text-[#212529]">{benefit.title}</h3>
-                <p className="text-[#212529] opacity-80">{benefit.desc}</p>
+                <h3 className="text-xl font-bold mb-2 text-white">{benefit.title}</h3>
+                <p className="text-white opacity-80">{benefit.desc}</p>
               </div>
             ))}
           </div>

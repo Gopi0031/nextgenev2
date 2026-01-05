@@ -104,8 +104,8 @@ export default function TwoWheelerProducts() {
         <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 group cursor-pointer">
           <div className="relative">
             <div className="absolute -inset-2 bg-gradient-to-r from-[#A8E600] via-[#36454F] to-[#A8E600] rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse"></div>
-            <div className="relative bg-gradient-to-r from-[#A8E600] to-[#36454F] p-5 rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-110 group-hover:rotate-12">
-              <div className="text-5xl">🚐</div>
+            <div className="relative bg-gradient-to-r from-[#A8E600] to-[#36454F] p-5 rounded-full shadow-2xl hover:shadow-xl transition-all transform hover:scale-105 group-hover:rotate-360 duration-1000">
+              <div className="text-4xl">🛺</div>
             </div>
           </div>
           <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-[#36454F] text-[#F5F5DC] px-5 py-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap font-bold text-base shadow-2xl group-hover:mr-5">
@@ -126,11 +126,6 @@ export default function TwoWheelerProducts() {
           <p className="text-xl md:text-2xl text-gray-500 mb-8">
             Urban Mobility Redefined - Eco-Friendly, Efficient, Powerful
           </p>
-          <Link href="/contact">
-            <button className="bg-[#A8E600] hover:bg-[#98d600] text-[#36454F] font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 text-lg shadow-xl">
-              Request Test Drive →
-            </button>
-          </Link>
         </div>
       </section>
 
@@ -227,7 +222,7 @@ export default function TwoWheelerProducts() {
                         </Link>
                         <Link href="/dealership" className="flex-1">
                           <button className="w-full bg-transparent border-2 border-[#36454F] hover:bg-[#36454F] hover:text-[#F5F5DC] text-[#36454F] font-bold py-4 px-8 rounded-full transition transform hover:scale-105 shadow-lg">
-                            Find Dealer
+                            Get Dealership
                           </button>
                         </Link>
                       </div>

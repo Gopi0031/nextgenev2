@@ -3,40 +3,12 @@ import Link from 'next/link'
 export default function Footer() {
   return (
     <footer className="bg-[#212529] text-[#F8F9FA]">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div>
-            <h3 className="text-2xl font-bold mb-4 text-[#7AB800]">NextGenEV</h3>
-            <p className="text-[#F8F9FA] opacity-80 text-sm">
-              Leading the future of electric mobility in India with innovative and sustainable solutions.
-            </p>
-          </div>
-          
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-bold mb-4 text-[#F8F9FA]">Quick Links</h4>
-            <ul className="space-y-2 text-[#F8F9FA] opacity-80 text-sm">
-              <li><Link href="/about" className="hover:text-[#7AB800] transition">About Us</Link></li>
-              <li><Link href="/products" className="hover:text-[#7AB800] transition">Products</Link></li>
-              <li><Link href="/services" className="hover:text-[#7AB800] transition">Services</Link></li>
-              <li><Link href="/dealership" className="hover:text-[#7AB800] transition">Dealership</Link></li>
-            </ul>
-          </div>
-          
-          {/* Support */}
-          <div>
-            <h4 className="font-bold mb-4 text-[#F8F9FA]">Support</h4>
-            <ul className="space-y-2 text-[#F8F9FA] opacity-80 text-sm">
-              <li><Link href="/contact" className="hover:text-[#7AB800] transition">Contact Us</Link></li>
-              <li><a href="tel:+919133913975" className="hover:text-[#7AB800] transition">+91 9133 913 975</a></li>
-              <li><a href="mailto:info@nextgenev.com" className="hover:text-[#7AB800] transition">info@nextgenev.com</a></li>
-            </ul>
-          </div>
-          
+      <div className="max-w-8xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+
           {/* Social Media */}
           <div>
-            <h4 className="font-bold mb-4 text-[#F8F9FA]">Follow Us</h4>
+            <h4 className="font-bold mb-4 text-[#7AB800]">Follow Us</h4>
             <div className="flex gap-4">
               <a href="#" className="text-[#F8F9FA] hover:text-[#7AB800] transition">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -55,6 +27,72 @@ export default function Footer() {
               </a>
             </div>
           </div>
+
+          {/* Company Info */}
+          <div>
+            <h3 className="text-2xl font-bold mb-4 text-[#7AB800]">NextGenEV</h3>
+            <p className="text-[#F8F9FA] opacity-80 text-sm">
+              Leading the future of electric mobility in India with innovative and sustainable solutions.
+            </p>
+          </div>
+          
+          {/* Quick Links */}
+         <div>
+            <h3 className="font-bold mb-3 text-[#7AB800]">Quick Links</h3>
+            <ul className="footer-m space-y-2 text-sm">
+              {[
+                ["Home", "/"],
+                ["About Us", "/about"],
+                ["EV Products", "/products"],
+                ["Dealership", "/dealership"],
+                ["Services", "/services"],
+                ["Contact Us", "/contact"],
+              ].map(([label, link]) => (
+                <li key={label}>
+                  <a href={link} className="hover:text-[#4ADE80] transition">
+                    {label}
+                  </a>
+                </li>                       
+              ))}
+            </ul>
+          </div>
+           <div>
+            <h3 className="font-bold mb-3 text-[#7AB800]">About Nextgen EV</h3>
+            <p className="text-sm mb-2 text-[#cccccc] leading-relaxed">
+              Nextgen EV is committed to delivering high-performance and sustainable
+              electric vehicles designed for modern India.
+            </p>
+            <p className="text-xs text-[#7AB800]">
+              Electrifying the future of transportation.
+            </p>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h4 className="font-bold mb-4 text-[#7AB800]">Our Location</h4>
+             <div>
+              <p className="foot-m text-xs font-semibold text-[#7AB800] mb-1">South India Distribution</p>
+              <address className="not-italic text-xs text-[#cccccc] leading-relaxed">
+                Near Saptha Kanikalamma Temple, Tirupati Main Road,
+                <br />
+                Doddipalle, Chittoor - 517001
+                <br />
+                Andhra Pradesh, India
+              </address>
+            </div>
+            <div className="mb-4">
+              <p className="foot-m text-xs font-semibold text-[#7AB800] mb-1">Manufacturing Unit</p>
+              <address className="not-italic text-xs text-[#cccccc] leading-relaxed">
+                Plot No. 2, Mohan Nagar, Opp Kurukshetra Model School
+                <br />
+                Near Mahindra Tractor Agency, Kurukshetra - 136118
+                <br />
+                Haryana, India
+              </address>
+            </div>
+          </div>
+          
+
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-[#F8F9FA] opacity-70 text-sm">

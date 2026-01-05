@@ -113,8 +113,8 @@ export default function ThreeWheelerProducts() {
             <div className="absolute -inset-2 bg-gradient-to-r from-[#36454F] via-[#A8E600] to-[#36454F] rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse"></div>
             
             {/* Main icon button */}
-            <div className="relative bg-gradient-to-r from-[#36454F] to-[#A8E600] p-5 rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-110 group-hover:rotate-12">
-              <div className="text-5xl">🏍️</div>
+            <div className="relative bg-gradient-to-r from-[#36454F] to-[#A8E600] p-5 rounded-full shadow-2xl hover:shadow-1xl transition-all transform hover:scale-102 group-hover:rotate-360 duration-1000">
+              <div className="text-4xl">🏍️</div>
             </div>
           </div>
           
@@ -137,11 +137,11 @@ export default function ThreeWheelerProducts() {
           <p className="text-xl md:text-2xl text-gray-500 mb-8">
             Built for Business - Powerful, Reliable, Cost-Effective
           </p>
-          <Link href="/contact">
+          {/* <Link href="/contact">
             <button className="bg-[#A8E600] hover:bg-[#98d600] text-[#36454F] font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 text-lg shadow-xl">
               Request Test Drive →
             </button>
-          </Link>
+          </Link> */}
         </div>
       </section>
 
@@ -150,7 +150,7 @@ export default function ThreeWheelerProducts() {
         <div className="max-w-7xl mx-auto">
           {products.length === 0 ? (
             <div className="text-center py-20">
-              <div className="text-8xl mb-6">🚐</div>
+              <div className="text-8xl mb-6">🛺</div>
               <h2 className="text-4xl font-black text-[#36454F] mb-4">No Products Available</h2>
               <p className="text-xl text-[#36454F]/70 mb-8">
                 Our 3-wheeler products are being updated. Check back soon!
